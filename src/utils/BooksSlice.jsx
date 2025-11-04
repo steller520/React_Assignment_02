@@ -4,6 +4,7 @@ const BooksSlice = createSlice({
     name: "books",
     initialState: {
         books: [],
+        categories: [],
     },
     reducers: {
         addBook: (state, action) => {
@@ -18,6 +19,9 @@ const BooksSlice = createSlice({
             if (index !== -1) {
                 state.books[index] = action.payload;
             }
+        },
+        addCategory: (state, action) => {
+            state.categories.push(action.payload);
         }
         
     }

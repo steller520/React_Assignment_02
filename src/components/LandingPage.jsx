@@ -1,19 +1,39 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import CategoryCard from './CategoryCard'
 import { FaSearch } from "react-icons/fa";
 import booksData from '../utils/BooksData';
 import { addBook } from '../utils/BooksSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 function LandingPage() {
-        console.log(booksData);
-        const dispatch = useDispatch();
-        for (let book of booksData.books) {
-                console.log("Adding book:", book);
-                dispatch(addBook(book));
+        const booksdata = useSelector((store)=>store.books);
+        console.log("Books data from Redux store:", booksdata);
+        
+        const [categories, setCategories] = useState(booksData.categories);
+        
+        const [searchTerm, setSearchTerm] = useState('');
+
+        const handleCategorySearch = (term) => {
+                console.log("Searching categories for:", term);
+                setSearchTerm(term);
+                const filtered = booksData.categories.filter(category =>
+                        category.name.toLowerCase().includes(term.toLowerCase())
+                );
+                setCategories(filtered);
         }
-return (
-        <div className='bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen relative overflow-hidden'>
+
+        const dispatch = useDispatch();
+        useEffect(() => {
+                console.log("Populating Redux store with books data");
+                for (let book of booksData.books) {
+                        console.log("Adding book:", book);
+                        dispatch(addBook(book));
+                }
+                
+        }, [dispatch]);
+
+        return (
+                <div className='bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen relative overflow-hidden'>
                         {/* Book watermarks */}
                         <div className="absolute inset-0 pointer-events-none opacity-30">
                                 <div className="absolute top-10 left-10 text-6xl transform rotate-12 text-gray-500">📚</div>
@@ -32,25 +52,29 @@ return (
 
                         <h1 className="text-4xl text-center font-bold p-8 text-gray-800 tracking-wide relative z-10">Welcome to the Online Library</h1>
                         <div className="flex justify-between items-center p-6 border border-blue-200 rounded-2xl max-w-6xl mx-auto mb-8 bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 relative z-10">
-                                        <h2 className="text-2xl font-semibold text-gray-700">Browse Categories</h2>
-                                        <div className="relative">
-                                                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                                        <input 
-                                                                        type="text" 
-                                                                        className="border border-gray-300 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm" 
-                                                                        placeholder="Search categories..." 
-                                                        />
-                                        </div>
+                                <h2 className="text-2xl font-semibold text-gray-700">Browse Categories</h2>
+                                <div className="relative">
+                                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                        <input
+                                                onChange={(e)=>handleCategorySearch(e.target.value)}
+                                                value={searchTerm}
+                                                type="text"
+                                                className="border border-gray-300 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                                                placeholder="Search categories..."
+                                        />
+                                </div>
                         </div>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 max-w-6xl mx-auto relative z-10">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-4 gap-6 p-6 max-w-7xl mx-auto relative z-10">
                                 {
-                                                booksData.categories.map(category => (
-                                                        <CategoryCard key={category.id} category={category} />
-                                                ))
+                                        categories.map(category => (
+                                                <li key={category.id} className='flex justify-center items-center'>
+                                                        <CategoryCard category={category} />
+                                                </li>
+                                        ))
                                 }
                         </ul>
-        </div>
-)
+                </div>
+        )
 }
 
 export default LandingPage

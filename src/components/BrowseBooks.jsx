@@ -21,7 +21,7 @@ function BrowseBooks() {
   return (
     <>
       <div className="flex mt-8 justify-between items-center p-6 border border-blue-200 rounded-2xl max-w-7xl mx-auto mb-8 bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 relative z-10">
-        <h2 className="text-2xl font-semibold text-gray-700">Browse Categories</h2>
+        <h2 className="text-2xl font-semibold text-gray-700">Browse Books</h2>
         <div className="relative">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
