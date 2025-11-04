@@ -1,11 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import booksData from '../utils/BooksData'
 import { useParams } from 'react-router-dom';
 import BookDetails from './BookDetails';
+import { useSelector } from 'react-redux';
 
 function CategoryPage() {
+  const booksdata = useSelector((store)=>store.books);
+  console.log("Books data from Redux store:", booksdata);
+  // const [categories, setCategories] = useState(booksdata.categories);
+  const [books, setBooks] = useState(booksdata.books);
+
+  useEffect(() => {
+    setBooks(booksdata.books);
+  }, [ booksdata.books]);
+
   const { id } = useParams();
-  const filteredCategories = booksData.books.filter(book => book.categoryId === parseInt(id));
+
+  console.log(books)
+  const filteredCategories = books.filter(book => book.categoryId === parseInt(id));
   console.log("Filtered Categories:", filteredCategories);
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">

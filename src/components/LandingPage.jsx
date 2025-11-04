@@ -1,20 +1,61 @@
-import React, { useEffect, useState } from 'react'
+import React, { use, useCallback, useEffect, useRef, useState } from 'react'
 import CategoryCard from './CategoryCard'
 import { FaSearch } from "react-icons/fa";
 import booksData from '../utils/BooksData';
-import { addBook } from '../utils/BooksSlice';
+import { addBook, addCategory } from '../utils/BooksSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 function LandingPage() {
+        // Get books data from Redux store
         const booksdata = useSelector((store)=>store.books);
+        // Sync local categories state with Redux store
+        // Lazy initialization of categories state
+        const [categories, setCategories] = useState(booksdata?.categories ?? []);
+        // Search term state
+        const [searchTerm, setSearchTerm] = useState('');
+        // Loading state
+        const [isLoading, setIsLoading] = useState(()=>!booksdata || booksdata.categories.length === 0);
+        // Initialization flag
+        const didInitialize = useRef(false);
+
+        // Sync local categories state with Redux store
+        useEffect(() => {
+                if (booksdata?.categories) {
+                        setCategories(booksdata.categories);
+                        setIsLoading(false);
+                }
+        }, [booksdata?.categories]);
+
         console.log("Books data from Redux store:", booksdata);
         
-        const [categories, setCategories] = useState(booksData.categories);
+        const dispatch = useDispatch();
+        // One-time initialization effect
+        useEffect(()=>{
+                // if we have already initialized, do nothing
+                if(didInitialize.current) return;
+
+                const storeHadCategories = Array.isArray(booksdata?.categories) && booksdata.categories.length > 0;
+                const storeHasBooks = Array.isArray(booksdata?.books) && booksdata.books.length > 0;
+                
+                if(!storeHadCategories && !storeHasBooks) {
+                        for (const category of booksData.categories) {
+                                console.log("Category in store:", category);
+                                dispatch(addCategory(category));
+                        }
+                        for (const book of booksData.books) {
+                                console.log("Book in store:", book);
+                                dispatch(addBook(book));
+                        }
+                }
+                didInitialize.current = true;
+
+        }, [dispatch]);
+
+        console.log("Initial categories:", categories);
         
-        const [searchTerm, setSearchTerm] = useState('');
 
         const handleCategorySearch = (term) => {
-                console.log("Searching categories for:", term);
+                // console.log("Searching categories for:", term);
                 setSearchTerm(term);
                 const filtered = booksData.categories.filter(category =>
                         category.name.toLowerCase().includes(term.toLowerCase())
@@ -22,18 +63,10 @@ function LandingPage() {
                 setCategories(filtered);
         }
 
-        const dispatch = useDispatch();
-        useEffect(() => {
-                console.log("Populating Redux store with books data");
-                for (let book of booksData.books) {
-                        console.log("Adding book:", book);
-                        dispatch(addBook(book));
-                }
-                
-        }, [dispatch]);
+       
 
-        return (
-                <div className='bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen relative overflow-hidden'>
+        return ( isLoading ? <div className='border '>Loading...</div> :
+                <div className='bg-linear-to-br from-blue-50 to-indigo-100 min-h-screen relative overflow-hidden'>
                         {/* Book watermarks */}
                         <div className="absolute inset-0 pointer-events-none opacity-30">
                                 <div className="absolute top-10 left-10 text-6xl transform rotate-12 text-gray-500">📚</div>
