@@ -7,11 +7,14 @@ import BrowseBooks from './components/BrowseBooks.jsx'
 import LandingPage from './components/LandingPage.jsx'
 import AddBook from './components/AddBook.jsx'
 import CategoryPage from './components/CategoryPage.jsx'
+import ErrorPage from './components/ErrorPage.jsx'
+import BookDetails from './components/BookDetails.jsx'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',
@@ -29,9 +32,13 @@ const router = createBrowserRouter([
         path: '/category/:id',
         element: <CategoryPage />,
       },
+      {
+        path: '/book/:id',
+        element: <BookDetails />,
+      },
     ],
-  },
-])
+  }
+],)
 
 createRoot(document.getElementById('root')).render(
   <RouterProvider router={router} />

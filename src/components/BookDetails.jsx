@@ -1,37 +1,33 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom'
 
 function BookDetails({ book }) {
-    console.log("Book Details:", book);
-    const handleReadMore = () => {
-        alert(`Read more about: ${book.title}`);
-    }
-return (
-    <>
-        <div className="aspect-w-16 aspect-h-9 bg-gradient-to-r from-blue-500 to-purple-600 p-4 w-full">
-            <div className="flex items-center justify-center h-full">
-                <h2 className="text-xl font-bold text-white text-center">{book.title}</h2>
+    const { id } = useParams();
+    const bookDetails = useSelector((store) => store.books.books.find((b) => b.id === parseInt(id)));
+
+    return (
+        <div className='flex items-center justify-center min-h-screen'>
+            <div className=" max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+                <h1 className="text-3xl font-bold text-gray-800 mb-6">Book Details for ID: {id}</h1>
+                {bookDetails ? (
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-semibold text-gray-700 mb-4">{bookDetails.title}</h2>
+                        <p className="text-gray-600 leading-relaxed mb-4">{bookDetails.description}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p className="text-lg"><span className="font-semibold text-gray-700">Author:</span> <span className="text-gray-600">{bookDetails.author}</span></p>
+                            <p className="text-lg"><span className="font-semibold text-gray-700">Genre:</span> <span className="text-gray-600">{bookDetails.genre}</span></p>
+                            <p className="text-lg"><span className="font-semibold text-gray-700">Price:</span> <span className="text-green-600 font-bold">${bookDetails.price}</span></p>
+                            <p className="text-lg"><span className="font-semibold text-gray-700">ISBN:</span> <span className="text-gray-600">{bookDetails.isbn}</span></p>
+                            <p className="text-lg"><span className="font-semibold text-gray-700">Rating:</span> <span className="text-yellow-500 font-bold">{bookDetails.rating}</span></p>
+                        </div>
+                    </div>
+                ) : (
+                    <p className="text-xl text-red-500 text-center">Book not found</p>
+                )}
             </div>
         </div>
-        {book.img && (
-            <div className="p-4">
-                <img 
-                    src={book.img} 
-                    alt={book.title} 
-                    className="w-full h-64 object-contain rounded-lg"
-                />
-            </div>
-        )}
-        <div className="p-6">
-            <p className="text-gray-600 leading-relaxed mb-4">{book.description}</p>
-            <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Book ID: {book.id}</span>
-                <button onClick={handleReadMore} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors duration-200">
-                    Read More
-                </button>
-            </div>
-        </div>
-    </>
-)
+    )
 }
 
 export default BookDetails

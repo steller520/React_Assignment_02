@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import BookDetails from './BookDetails';
 import { FaSearch } from "react-icons/fa";
 import { useSelector } from 'react-redux';
+import BookTemplate from './BookTemplate';
 
 
 function BrowseBooks() {
@@ -48,7 +48,7 @@ function BrowseBooks() {
         {
           filteredBooks.map((book) => (
             <div key={book.id} className="w-full max-w-sm mx-auto mb-6 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 overflow-hidden">
-              <BookDetails book={book} />
+              <BookTemplate book={book} />
             </div>
           ))
         }

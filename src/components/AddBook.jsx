@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import BookDetails from './BookDetails';
 import { useDispatch, useSelector } from 'react-redux';
-import appStore from '../utils/appStore';
 import { addBook, addCategory } from '../utils/BooksSlice';
 import findImageUrl from '../utils/findImageUrl';
+import BookTemplate from './BookTemplate';
 useDispatch
 function AddBook() {
   const dispatch = useDispatch();
@@ -133,7 +132,7 @@ function AddBook() {
                   Book Preview
                 </h3>
                 <div className="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
-                  <BookDetails book={newBook} />
+                  <BookTemplate book={newBook} />
                 </div>
               </div>
             ) : (

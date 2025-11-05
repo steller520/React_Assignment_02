@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import booksData from '../utils/BooksData'
 import { useParams } from 'react-router-dom';
-import BookDetails from './BookDetails';
 import { useSelector } from 'react-redux';
+import BookTemplate from './BookTemplate';
 
 function CategoryPage() {
   const booksdata = useSelector((store)=>store.books);
@@ -29,7 +29,7 @@ function CategoryPage() {
           {
             filteredCategories.map((book) => (
               <div key={book.id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 overflow-hidden">
-                  <BookDetails book={book} />
+                  <BookTemplate book={book} />
               </div>
             ))
           }

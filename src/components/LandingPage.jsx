@@ -97,7 +97,7 @@ function LandingPage() {
                                         />
                                 </div>
                         </div>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-4 gap-6 p-6 max-w-7xl mx-auto relative z-10">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-4 min-gap-2 gap-6 p-6 max-w-8xl mx-auto relative z-10">
                                 {
                                         categories.map(category => (
                                                 <li key={category.id} className='flex justify-center items-center'>
