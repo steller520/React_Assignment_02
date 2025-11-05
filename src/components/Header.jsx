@@ -12,10 +12,10 @@ return (
                         <Link to="/" className="hover:text-blue-200 hover:underline transition-colors duration-200">Home</Link>
                     </li>
                     <li>
-                        <Link to="/browse" className="hover:text-blue-200 hover:underline transition-colors duration-200">Browse Books</Link>
+                        <Link to="/browse" id='browsebooks' className="hover:text-blue-200 hover:underline transition-colors duration-200">Browse Books</Link>
                     </li>
                     <li>
-                        <Link to="/addbook" className="hover:text-blue-200 hover:underline transition-colors duration-200">Add Book</Link>
+                        <Link to="/addbook"  className="hover:text-blue-200 hover:underline transition-colors duration-200">Add Book</Link>
                     </li>
             </ul>
         </nav>

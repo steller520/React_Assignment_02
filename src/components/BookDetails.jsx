@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 function BookDetails({ book }) {
     const { id } = useParams();
+    useSelector
     const bookDetails = useSelector((store) => store.books.books.find((b) => b.id === parseInt(id)));
 
     return (

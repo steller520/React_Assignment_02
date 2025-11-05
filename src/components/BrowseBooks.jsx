@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { FaSearch } from "react-icons/fa";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import BookTemplate from './BookTemplate';
+import { setNewBookAdded } from '../utils/BooksSlice';
 
 
 function BrowseBooks() {
+  const dispatch = useDispatch();
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const books = useSelector((store)=>store.books);
@@ -24,6 +27,16 @@ function BrowseBooks() {
     }
   }, [books.books, searchTerm]);
 
+  useEffect(() => {
+    if(books.newBookAdded) {
+      let reversedBooks = [...books.books].reverse();
+      setFilteredBooks(reversedBooks);
+      dispatch(setNewBookAdded(false));
+    }else {
+      return;
+    }
+  }, [books.newBookAdded]);
+
   const handleSearch = (term) => {
     console.log("Searching for:", term);
     setSearchTerm(term);
@@ -36,6 +49,7 @@ function BrowseBooks() {
         <div className="relative">
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
+            id='searchbooks'
             onChange={(e) => handleSearch(e.target.value)}
             type="text"
             className="border border-gray-300 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"

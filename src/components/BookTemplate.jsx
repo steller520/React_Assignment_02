@@ -7,7 +7,7 @@ function BookTemplate({ book }) {
     
 return (
     <>
-        <div className="aspect-w-16 aspect-h-9 bg-gradient-to-r from-blue-500 to-purple-600 p-4 w-full">
+        <div className="aspect-w-16 aspect-h-9 bg-linear-to-r from-blue-500 to-purple-600 p-4 w-full">
             <div className="flex items-center justify-center h-full">
                 <h2 className="text-xl font-bold text-white text-center">{book.title}</h2>
             </div>

@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { addBook, addCategory } from '../utils/BooksSlice';
+import { addBook, addCategory, setNewBookAdded } from '../utils/BooksSlice';
 import findImageUrl from '../utils/findImageUrl';
 import BookTemplate from './BookTemplate';
+import { Link } from 'react-router-dom';
 useDispatch
 function AddBook() {
   const dispatch = useDispatch();
+
+  const [isClicked, setIsClicked] = useState(false);
 
   const booksdata = useSelector((store) => store.books);
   const books = booksdata?.books || [];
@@ -21,8 +24,20 @@ function AddBook() {
     // alert("Book added successfully!");
     let Book = addNewBook(e.target[0].value, e.target[1].value, e.target[2].value, e.target[3].value);
     setNewBook(Book);
+    setIsClicked(true);
     e.target.reset();
+    
   };
+
+  useEffect(() => {
+    if (!isClicked) return;
+    const timeout = setTimeout(() => {
+      document.getElementById('browsebooks').click();
+      dispatch(setNewBookAdded(true));
+      setIsClicked(false);
+    }, 8000);
+    return () => clearTimeout(timeout);
+  }, [isClicked]);
 
   function addNewBook(title, author, genre, description) {
     return {
@@ -59,7 +74,7 @@ function AddBook() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-12 text-gray-800 bg-white rounded-lg shadow-sm py-6">
           Add a New Book
@@ -117,7 +132,7 @@ function AddBook() {
               
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
               >
                 Add Book
               </button>
