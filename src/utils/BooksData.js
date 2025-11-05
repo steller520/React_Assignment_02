@@ -1,3 +1,4 @@
+// This file contains the initial dummy data for the books and categories.
 const booksData = {
   "categories": [
     { "id": 1, "name": "Fiction", "img": "https://picsum.photos/seed/category_fiction/600/300" },

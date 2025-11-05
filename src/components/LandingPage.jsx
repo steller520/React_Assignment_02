@@ -6,18 +6,18 @@ import { addBook, addCategory } from '../utils/BooksSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import BookTemplate from './BookTemplate';
 
+// The main landing page of the application
 function LandingPage() {
         // Get books data from Redux store
         const booksdata = useSelector((store) => store.books);
-        // Sync local categories state with Redux store
-        // Lazy initialization of categories state
+        // State for categories, initialized from Redux store or as an empty array
         const [categories, setCategories] = useState(booksdata?.categories ?? []);
-        // Loading state
+        // State for loading status
         const [isLoading, setIsLoading] = useState(() => !booksdata || booksdata.categories.length === 0);
-        // Initialization flag
+        // Ref to ensure initialization runs only once
         const didInitialize = useRef(false);
 
-        // Sync local categories state with Redux store
+        // Effect to sync local categories state with Redux store
         useEffect(() => {
                 if (booksdata?.categories) {
                         setCategories(booksdata.categories);
@@ -26,9 +26,9 @@ function LandingPage() {
         }, [booksdata?.categories]);
 
         console.log("Books data from Redux store:", booksdata);
-
+        
         const dispatch = useDispatch();
-        // One-time initialization effect
+        // One-time effect to initialize the store with dummy data if it's empty
         useEffect(() => {
                 // if we have already initialized, do nothing
                 if (didInitialize.current) return;
@@ -36,13 +36,12 @@ function LandingPage() {
                 const storeHadCategories = Array.isArray(booksdata?.categories) && booksdata.categories.length > 0;
                 const storeHasBooks = Array.isArray(booksdata?.books) && booksdata.books.length > 0;
 
+                // If the store is empty, populate it with data from BooksData.js
                 if (!storeHadCategories && !storeHasBooks) {
                         for (const category of booksData.categories) {
-                                // console.log("Category in store:", category);
                                 dispatch(addCategory(category));
                         }
                         for (const book of booksData.books) {
-                                // console.log("Book in store:", book);
                                 dispatch(addBook(book));
                         }
                 }
@@ -55,10 +54,9 @@ function LandingPage() {
 
 
 
-
         return (isLoading ? <div className='border '>Loading...</div> :
                 <div className='bg-linear-to-br from-blue-50 to-indigo-100 min-h-screen relative overflow-hidden'>
-                        {/* Book watermarks */}
+                        {/* Decorative book watermarks */}
                         <div className="absolute inset-0 pointer-events-none opacity-30">
                                 <div className="absolute top-10 left-10 text-6xl transform rotate-12 text-gray-500">📚</div>
                                 <div className="absolute top-32 right-20 text-5xl transform -rotate-12 text-blue-400">📖</div>
@@ -76,6 +74,7 @@ function LandingPage() {
 
                         <h1 className=" bg-linear-to-r from-blue-300 to-purple-300 shadow-2xl border-b border-blue-200 rounded-3xl max-w-7xl mt-6 mx-auto text-4xl text-center font-bold p-8 text-gray-800 tracking-wide relative z-10">Welcome to the Online Library</h1>
 
+                        {/* Display book categories */}
                         <ul className=" flex mt-4 gap-6 p-6 px-22 max-w-7xl mx-auto relative z-10">
                                 {
                                         categories.map(category => (
@@ -85,6 +84,7 @@ function LandingPage() {
                                         ))
                                 }
                         </ul>
+                        {/* Display popular books (rating >= 4.5) */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto relative z-10">
                                 {
                                         booksdata.books.filter(book => book.rating >= 4.5).map(book => (

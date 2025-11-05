@@ -5,6 +5,7 @@ import { addBook, addCategory, setNewBookAdded } from '../utils/BooksSlice';
 import findImageUrl from '../utils/findImageUrl';
 import BookTemplate from './BookTemplate';
 
+// This component provides a form to add a new book to the library.
 function AddBook() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,11 +17,13 @@ function AddBook() {
   const [errors, setErrors] = useState({});
   
   // --- Redux Store Data ---
+  // Get books and categories from the Redux store
   const booksdata = useSelector((store) => store.books);
   const books = booksdata?.books || [];
   const booksCategories = booksdata?.categories || [];
 
   // --- Validation Logic ---
+  // Validates the form fields and returns an object with any errors
   const validateForm = (title, author, genre, description) => {
     const newErrors = {};
     
@@ -53,6 +56,7 @@ function AddBook() {
   };
 
   // --- Form Submission ---
+  // Handles the form submission, validates the data, and adds the book
   const handleSubmitForm = (e) => {
     e.preventDefault();
     
@@ -63,18 +67,19 @@ function AddBook() {
     
     const validationErrors = validateForm(title, author, genre, description);
     
+    // If there are validation errors, display them and stop
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setNewBook(null); // Clear preview if validation fails
       return;
     }
     
-    // If validation passes
+    // If validation passes, clear errors and add the book
     setErrors({});
     const book = addNewBook(title, author, genre, description);
     setNewBook(book); // Show preview
     
-    // Dispatch to Redux and navigate
+    // Dispatch actions to add the book and category to the Redux store
     dispatch(addBook(book));
     
     // Handle category
@@ -87,7 +92,7 @@ function AddBook() {
       dispatch(addCategory(newCategory));
     }
     dispatch(setNewBookAdded(true));
-    // Navigate after a short delay to show the preview
+    // Navigate to the browse page after a short delay to show the preview
     setTimeout(() => {
       navigate('/browse');
     }, 2000); // 2-second delay before redirecting
@@ -96,6 +101,7 @@ function AddBook() {
   };
 
   // --- Helper Functions ---
+  // Creates a new book object
   function addNewBook(title, author, genre, description) {
     const matchedCategory = booksCategories.find(cat => cat.name.toLowerCase() === genre.toLowerCase());
     const nextCategoryId = matchedCategory
@@ -116,6 +122,7 @@ function AddBook() {
     };
   }
 
+  // Renders a validation error message
   const renderError = (fieldName) => {
     if (errors[fieldName]) {
       return (

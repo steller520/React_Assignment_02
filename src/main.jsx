@@ -10,36 +10,38 @@ import CategoryPage from './components/CategoryPage.jsx'
 import ErrorPage from './components/ErrorPage.jsx'
 import BookDetails from './components/BookDetails.jsx'
 
+// Create the browser router configuration
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
-    errorElement: <ErrorPage />,
+    element: <App />, // The root layout component
+    errorElement: <ErrorPage />, // The component to render on error
     children: [
       {
         path: '/',
-        element: <LandingPage />,
+        element: <LandingPage />, // The landing page
       },
       {
         path: '/browse',
-        element: <BrowseBooks />,
+        element: <BrowseBooks />, // The browse books page
       },
       {
         path: '/addbook',
-        element: <AddBook />,
+        element: <AddBook />, // The add book page
       },
       {
         path: '/category/:id',
-        element: <CategoryPage />,
+        element: <CategoryPage />, // The page for a specific category
       },
       {
         path: '/book/:id',
-        element: <BookDetails />,
+        element: <BookDetails />, // The page for a specific book
       },
     ],
   }
 ],)
 
+// Render the application
 createRoot(document.getElementById('root')).render(
   <RouterProvider router={router} />
 )

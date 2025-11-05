@@ -5,16 +5,18 @@ import BookTemplate from './BookTemplate';
 import { setNewBookAdded } from '../utils/BooksSlice';
 
 
+// This component displays all the books and allows searching
 function BrowseBooks() {
   const dispatch = useDispatch();
 
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Get books data from the Redux store
   const books = useSelector((store)=>store.books);
 
   const [filteredBooks, setFilteredBooks] = useState(books.books);
 
-  // Update filteredBooks whenever books change in Redux store
+  // Update filteredBooks whenever books change in the Redux store or the search term changes
   useEffect(() => {
     if (searchTerm === '') {
       setFilteredBooks(books.books);
@@ -27,6 +29,7 @@ function BrowseBooks() {
     }
   }, [books.books, searchTerm]);
 
+  // When a new book is added, reverse the order to show it at the top
   useEffect(() => {
     if(books.newBookAdded) {
       let reversedBooks = [...books.books].reverse();
@@ -37,6 +40,7 @@ function BrowseBooks() {
     }
   }, [books.newBookAdded]);
 
+  // Handle search input changes
   const handleSearch = (term) => {
     console.log("Searching for:", term);
     setSearchTerm(term);
