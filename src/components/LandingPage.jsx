@@ -39,11 +39,11 @@ function LandingPage() {
                 
                 if(!storeHadCategories && !storeHasBooks) {
                         for (const category of booksData.categories) {
-                                console.log("Category in store:", category);
+                                // console.log("Category in store:", category);
                                 dispatch(addCategory(category));
                         }
                         for (const book of booksData.books) {
-                                console.log("Book in store:", book);
+                                // console.log("Book in store:", book);
                                 dispatch(addBook(book));
                         }
                 }

@@ -1,23 +1,34 @@
-import React, { useState } from 'react'
-import booksData from '../utils/BooksData'
+import React, { useState, useEffect } from 'react'
 import BookDetails from './BookDetails';
 import { FaSearch } from "react-icons/fa";
+import { useSelector } from 'react-redux';
 
 
 function BrowseBooks() {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [filteredBooks, setFilteredBooks] = useState(booksData.books);
+  const books = useSelector((store)=>store.books);
+
+  const [filteredBooks, setFilteredBooks] = useState(books.books);
+
+  // Update filteredBooks whenever books change in Redux store
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredBooks(books.books);
+    } else {
+      const filtered = books.books.filter(book => 
+        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredBooks(filtered);
+    }
+  }, [books.books, searchTerm]);
 
   const handleSearch = (term) => {
     console.log("Searching for:", term);
     setSearchTerm(term);
-    const filtered = booksData.books.filter(book => 
-      book.title.toLowerCase().includes(term.toLowerCase()) ||
-      book.description.toLowerCase().includes(term.toLowerCase())
-    );
-    setFilteredBooks(filtered);
   }
+  
   return (
     <>
       <div className="flex mt-8 justify-between items-center p-6 border border-blue-200 rounded-2xl max-w-7xl mx-auto mb-8 bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 relative z-10">
@@ -33,10 +44,10 @@ function BrowseBooks() {
           />
         </div>
       </div>
-      <div className="flex flex-wrap justify-center max-w-8xl mx-auto min-h-screen bg-gray-50 py-8 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-8xl mx-auto min-h-screen bg-gray-50 py-8 px-4">
         {
           filteredBooks.map((book) => (
-            <div key={book.id} className="max-w-sm mx-auto mb-6 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 overflow-hidden">
+            <div key={book.id} className="w-full max-w-sm mx-auto mb-6 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 overflow-hidden">
               <BookDetails book={book} />
             </div>
           ))
