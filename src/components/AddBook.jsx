@@ -1,78 +1,136 @@
-import React, { use, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { addBook, addCategory, setNewBookAdded } from '../utils/BooksSlice';
 import findImageUrl from '../utils/findImageUrl';
 import BookTemplate from './BookTemplate';
-import { Link } from 'react-router-dom';
-useDispatch
+
 function AddBook() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [isClicked, setIsClicked] = useState(false);
-
+  // --- State Declarations ---
+  // State for the new book preview
+  const [newBook, setNewBook] = useState(null);
+  // State to hold validation errors
+  const [errors, setErrors] = useState({});
+  
+  // --- Redux Store Data ---
   const booksdata = useSelector((store) => store.books);
   const books = booksdata?.books || [];
   const booksCategories = booksdata?.categories || [];
 
-  console.log("Books data from Redux store:", booksdata);
-
-  const [newBook, setNewBook] = useState(null);
-
-  const handleSubmitForm = (e) => {
-    e.preventDefault();
-    console.log("Form submitted:", e.target[0].value, e.target[1].value, e.target[2].value);
-    // alert("Book added successfully!");
-    let Book = addNewBook(e.target[0].value, e.target[1].value, e.target[2].value, e.target[3].value);
-    setNewBook(Book);
-    setIsClicked(true);
-    e.target.reset();
+  // --- Validation Logic ---
+  const validateForm = (title, author, genre, description) => {
+    const newErrors = {};
     
+    // Title validation
+    if (!title.trim()) newErrors.title = 'Title is required';
+    else if (title.trim().length < 2) newErrors.title = 'Title must be at least 2 characters';
+    else if (title.trim().length > 100) newErrors.title = 'Title must be less than 100 characters';
+    
+    // Author validation
+    if (!author.trim()) newErrors.author = 'Author is required';
+    else if (author.trim().length < 2) newErrors.author = 'Author name must be at least 2 characters';
+    else if (author.trim().length > 50) newErrors.author = 'Author name must be less than 50 characters';
+    
+    // Genre validation
+    if (!genre.trim()) newErrors.genre = 'Genre is required';
+    else if (genre.trim().length < 2) newErrors.genre = 'Genre must be at least 2 characters';
+    else if (genre.trim().length > 30) newErrors.genre = 'Genre must be less than 30 characters';
+    
+    // Description validation
+    if (!description.trim()) newErrors.description = 'Description is required';
+    else if (description.trim().length < 10) newErrors.description = 'Description must be at least 10 characters';
+    else if (description.trim().length > 500) newErrors.description = 'Description must be less than 500 characters';
+    
+    // Check for duplicate title
+    if (books.some(book => book.title.toLowerCase().trim() === title.toLowerCase().trim())) {
+      newErrors.title = 'A book with this title already exists';
+    }
+    
+    return newErrors;
   };
 
-  useEffect(() => {
-    if (!isClicked) return;
-    const timeout = setTimeout(() => {
-      document.getElementById('browsebooks').click();
-      dispatch(setNewBookAdded(true));
-      setIsClicked(false);
-    }, 8000);
-    return () => clearTimeout(timeout);
-  }, [isClicked]);
+  // --- Form Submission ---
+  const handleSubmitForm = (e) => {
+    e.preventDefault();
+    
+    const title = e.target.elements.title.value;
+    const author = e.target.elements.author.value;
+    const genre = e.target.elements.genre.value;
+    const description = e.target.elements.description.value;
+    
+    const validationErrors = validateForm(title, author, genre, description);
+    
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setNewBook(null); // Clear preview if validation fails
+      return;
+    }
+    
+    // If validation passes
+    setErrors({});
+    const book = addNewBook(title, author, genre, description);
+    setNewBook(book); // Show preview
+    
+    // Dispatch to Redux and navigate
+    dispatch(addBook(book));
+    
+    // Handle category
+    const categoryExists = booksCategories.some(cat => cat.id === book.categoryId);
+    if (!categoryExists) {
+      const newCategory = {
+        id: book.categoryId,
+        name: book.categoryName,
+      };
+      dispatch(addCategory(newCategory));
+    }
+    dispatch(setNewBookAdded(true));
+    // Navigate after a short delay to show the preview
+    setTimeout(() => {
+      navigate('/browse');
+    }, 2000); // 2-second delay before redirecting
 
+    e.target.reset();
+  };
+
+  // --- Helper Functions ---
   function addNewBook(title, author, genre, description) {
+    const matchedCategory = booksCategories.find(cat => cat.name.toLowerCase() === genre.toLowerCase());
+    const nextCategoryId = matchedCategory
+      ? matchedCategory.id
+      : (booksCategories.length > 0 ? Math.max(...booksCategories.map(c => c.id)) + 1 : 1);
+
     return {
-      id: books.findLast(book => true)?.id + 1 || books.length + 1,
-      title: title,
-      author: author,
-      categoryId: booksCategories.find(cat => cat.name.toLowerCase() === genre.toLowerCase())?.id || null,
+      id: (books.length > 0 ? Math.max(...books.map(b => b.id)) : 0) + 1,
+      title,
+      author,
+      categoryId: nextCategoryId,
+      categoryName: matchedCategory ? matchedCategory.name : genre,
       img: findImageUrl(title),
-      description: description,
+      description,
       price: 15.00,
       isbn: `978-1-23456-${books.length + 1}-0`,
       rating: 4.0
     };
   }
 
-
-  useEffect(() => {
-    if (newBook) {
-      console.log("New Book to be added:", newBook);
-      dispatch(addBook(newBook));
-      // Check and add category if it doesn't exist
-      const categoryExists = booksCategories.some(cat => cat.id === newBook.categoryId);
-      if (!categoryExists && newBook.categoryId !== null) {
-        const newCategory = {
-          id: newBook.categoryId,
-          name: newBook.categoryId ? newBook.categoryId : 'Uncategorized'
-        };
-        console.log("Adding new category:", newCategory);
-        dispatch(addCategory(newCategory));
-      }
+  const renderError = (fieldName) => {
+    if (errors[fieldName]) {
+      return (
+        <p className="text-red-500 text-sm mt-1 flex items-center">
+          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {errors[fieldName]}
+        </p>
+      );
     }
-  }, [newBook]);
+    return null;
+  };
 
-
-
+  // --- JSX ---
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-6xl mx-auto">
@@ -87,35 +145,38 @@ function AddBook() {
               Book Details
             </h2>
             
-            <form id='addBookForm' onSubmit={handleSubmitForm} className="space-y-6">
+            <form id='addBookForm' onSubmit={handleSubmitForm} className="space-y-6" noValidate>
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">Book Title</label>
                 <input
+                  name="title"
                   type="text"
                   placeholder="Enter book title"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                  required
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ${errors.title ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
                 />
+                {renderError('title')}
               </div>
               
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">Author</label>
                 <input
+                  name="author"
                   type="text"
                   placeholder="Enter author name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                  required
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ${errors.author ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
                 />
+                {renderError('author')}
               </div>
               
               <div className="space-y-1">
                 <label className="block text-sm font-medium text-gray-700">Genre</label>
                 <input
+                  name="genre"
                   type="text"
                   placeholder="Enter genre"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                  required
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 ${errors.genre ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
                 />
+                {renderError('genre')}
               </div>
               
               <div className="space-y-1">
@@ -125,9 +186,9 @@ function AddBook() {
                   id="description" 
                   placeholder="Enter book description"
                   rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-vertical"
-                  required
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition duration-200 resize-vertical ${errors.description ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
                 />
+                {renderError('description')}
               </div>
               
               <button
@@ -165,8 +226,7 @@ function AddBook() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
 
 export default AddBook;

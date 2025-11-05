@@ -4,11 +4,9 @@ import { Link } from 'react-router-dom'
 function CategoryCard({ category }) {
 return (
     <Link to={`/category/${category.id}`}>
-        <div className={`bg-cover opacity-95  border border-gray-300 bg-white hover:scale-105 hover:bg-blue-100 transition-all ease-in-out duration-300 p-6 rounded-lg w-64 h-72 shadow-lg hover:shadow-xl flex items-center justify-center cursor-pointer`} style={{ backgroundImage: `url(${category.img})` }}>
-            <span className="text-lg font-semibold text-white text-center drop-shadow-lg">
-                {category.name}
-            </span>
-        </div>
+        <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all ease-in-out duration-300 transform hover:scale-105">
+            {category.name}
+        </button>
     </Link>
 )
 }

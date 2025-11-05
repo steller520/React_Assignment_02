@@ -11,7 +11,8 @@ This project is a responsive and interactive online library application built wi
 - **View Books by Category**: Click on a category to see all books belonging to it.
 - **Browse All Books**: A dedicated page to view and search all books in the library.
 - **Search Books**: Filter books by title or description.
-- **Add New Books**: A form to add new books to the library. If a new genre is entered, it is dynamically added to the list of categories.
+- **Add New Books**: A form to add new books to the library, with client-side validation. If a new genre is entered, it is dynamically added to the list of categories.
+- **Redirect after Add**: After successfully adding a book, the user is redirected to the "Browse Books" page.
 - **Dynamic Image Generation**: Book images are dynamically generated based on the book title using an external image service.
 - **Responsive Design**: The application is fully responsive and works on various screen sizes.
 - **404 Error Page**: A custom 404 page is displayed for invalid routes, showing the incorrect URL.

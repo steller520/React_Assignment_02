@@ -4,17 +4,16 @@ import { FaSearch } from "react-icons/fa";
 import booksData from '../utils/BooksData';
 import { addBook, addCategory } from '../utils/BooksSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import BookTemplate from './BookTemplate';
 
 function LandingPage() {
         // Get books data from Redux store
-        const booksdata = useSelector((store)=>store.books);
+        const booksdata = useSelector((store) => store.books);
         // Sync local categories state with Redux store
         // Lazy initialization of categories state
         const [categories, setCategories] = useState(booksdata?.categories ?? []);
-        // Search term state
-        const [searchTerm, setSearchTerm] = useState('');
         // Loading state
-        const [isLoading, setIsLoading] = useState(()=>!booksdata || booksdata.categories.length === 0);
+        const [isLoading, setIsLoading] = useState(() => !booksdata || booksdata.categories.length === 0);
         // Initialization flag
         const didInitialize = useRef(false);
 
@@ -27,17 +26,17 @@ function LandingPage() {
         }, [booksdata?.categories]);
 
         console.log("Books data from Redux store:", booksdata);
-        
+
         const dispatch = useDispatch();
         // One-time initialization effect
-        useEffect(()=>{
+        useEffect(() => {
                 // if we have already initialized, do nothing
-                if(didInitialize.current) return;
+                if (didInitialize.current) return;
 
                 const storeHadCategories = Array.isArray(booksdata?.categories) && booksdata.categories.length > 0;
                 const storeHasBooks = Array.isArray(booksdata?.books) && booksdata.books.length > 0;
-                
-                if(!storeHadCategories && !storeHasBooks) {
+
+                if (!storeHadCategories && !storeHasBooks) {
                         for (const category of booksData.categories) {
                                 // console.log("Category in store:", category);
                                 dispatch(addCategory(category));
@@ -52,20 +51,12 @@ function LandingPage() {
         }, [dispatch]);
 
         console.log("Initial categories:", categories);
-        
 
-        const handleCategorySearch = (term) => {
-                // console.log("Searching categories for:", term);
-                setSearchTerm(term);
-                const filtered = booksData.categories.filter(category =>
-                        category.name.toLowerCase().includes(term.toLowerCase())
-                );
-                setCategories(filtered);
-        }
 
-       
 
-        return ( isLoading ? <div className='border '>Loading...</div> :
+
+
+        return (isLoading ? <div className='border '>Loading...</div> :
                 <div className='bg-linear-to-br from-blue-50 to-indigo-100 min-h-screen relative overflow-hidden'>
                         {/* Book watermarks */}
                         <div className="absolute inset-0 pointer-events-none opacity-30">
@@ -83,21 +74,9 @@ function LandingPage() {
                                 <div className="absolute bottom-80 right-1/3 text-5xl transform -rotate-90 text-violet-400">📋</div>
                         </div>
 
-                        <h1 className="text-4xl text-center font-bold p-8 text-gray-800 tracking-wide relative z-10">Welcome to the Online Library</h1>
-                        <div className="flex justify-between items-center p-6 border border-blue-200 rounded-2xl max-w-6xl mx-auto mb-8 bg-white shadow-lg hover:shadow-xl transition-shadow duration-300 relative z-10">
-                                <h2 className="text-2xl font-semibold text-gray-700">Browse Categories</h2>
-                                <div className="relative">
-                                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                        <input
-                                                onChange={(e)=>handleCategorySearch(e.target.value)}
-                                                value={searchTerm}
-                                                type="text"
-                                                className="border border-gray-300 pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
-                                                placeholder="Search categories..."
-                                        />
-                                </div>
-                        </div>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-4 min-gap-2 gap-6 p-6 max-w-8xl mx-auto relative z-10">
+                        <h1 className=" bg-linear-to-r from-blue-300 to-purple-300 shadow-2xl border-b border-blue-200 rounded-3xl max-w-7xl mt-6 mx-auto text-4xl text-center font-bold p-8 text-gray-800 tracking-wide relative z-10">Welcome to the Online Library</h1>
+
+                        <ul className=" flex mt-4 gap-6 p-6 px-22 max-w-7xl mx-auto relative z-10">
                                 {
                                         categories.map(category => (
                                                 <li key={category.id} className='flex justify-center items-center'>
@@ -106,6 +85,15 @@ function LandingPage() {
                                         ))
                                 }
                         </ul>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 max-w-7xl mx-auto relative z-10">
+                                {
+                                        booksdata.books.filter(book => book.rating >= 4.5).map(book => (
+                                                <div key={book.id} className="w-full max-w-sm mx-auto mb-6 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 overflow-hidden">
+                                                        <BookTemplate key={book.id} book={book} />
+                                                </div>
+                                        ))
+                                }
+                        </div>
                 </div>
         )
 }
