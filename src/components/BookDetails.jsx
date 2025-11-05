@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { CiStar } from "react-icons/ci";
 
 // This component displays the details of a single book
@@ -15,7 +15,7 @@ function BookDetails({ book }) {
     });
 
     return (
-        <div className='flex items-center justify-center min-h-screen'>
+        <div className='flex flex-col gap-4 items-center justify-center min-h-screen'>
             <div className=" max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Book Details for ID: {id}</h1>
                 {bookDetails.book ? (
@@ -34,6 +34,9 @@ function BookDetails({ book }) {
                     <p className="text-xl text-red-500 text-center">Book not found</p>
                 )}
             </div>
+            <Link to="/browse" className=" bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors duration-200 shadow-md hover:shadow-lg">
+                Back to Browse
+            </Link>
         </div>
     )
 }
